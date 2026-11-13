@@ -1,0 +1,1023 @@
+{
+  "schema": "deskweaver.rules/v1",
+  "version": "0.1.0",
+  "updated": "2026-11-13",
+  "signature": "dev-unsigned",
+  "rules": [
+    {
+      "id": "react",
+      "name": "React (Vite/CRA)",
+      "tier": "A",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 40,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static SPA profile. Electron is the fallback when Node APIs or a bundled Chromium are required.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "react", "weight": 70},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "react-dom", "weight": 20},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "vite", "weight": 15},
+        {"kind": "file_exists", "path": "vite.config.*", "weight": 15},
+        {"kind": "file_exists", "path": "src/main.tsx", "weight": 10},
+        {"kind": "file_exists", "path": "src/main.jsx", "weight": 10}
+      ]
+    },
+    {
+      "id": "nextjs",
+      "name": "Next.js",
+      "tier": "A",
+      "language": "node",
+      "default_target": "electron",
+      "priority": 90,
+      "supersedes": ["react", "static-web"],
+      "capabilities": ["server", "node"],
+      "notes": "API routes, server components, and ISR block static export. Tauri only when output: 'export' is genuinely viable.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "next", "weight": 85},
+        {"kind": "file_exists", "path": "next.config.*", "weight": 30},
+        {"kind": "dir_exists", "path": "app", "weight": 15},
+        {"kind": "dir_exists", "path": "pages", "weight": 15}
+      ]
+    },
+    {
+      "id": "vue",
+      "name": "Vue",
+      "tier": "A",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 50,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static Vue SPA. Nuxt is detected as a variant and defaults to Electron when SSR or server routes are present.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "vue", "weight": 70},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "nuxt", "weight": 45},
+        {"kind": "file_exists", "path": "vite.config.*", "weight": 10},
+        {"kind": "file_exists", "path": "nuxt.config.*", "weight": 20},
+        {"kind": "file_exists", "path": "src/App.vue", "weight": 15}
+      ]
+    },
+    {
+      "id": "svelte",
+      "name": "Svelte",
+      "tier": "A",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 50,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static Svelte SPA. SvelteKit is detected as a variant; adapter-static keeps the Tauri path, Node adapters require Electron.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "svelte", "weight": 70},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@sveltejs/kit", "weight": 40},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@sveltejs/adapter-static", "weight": 20},
+        {"kind": "file_exists", "path": "svelte.config.*", "weight": 20},
+        {"kind": "file_exists", "path": "src/App.svelte", "weight": 15}
+      ]
+    },
+    {
+      "id": "angular",
+      "name": "Angular",
+      "tier": "A",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 60,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Check the Angular major version and EOL status before packaging. Static builds are typical.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@angular/core", "weight": 85},
+        {"kind": "file_exists", "path": "angular.json", "weight": 30},
+        {"kind": "file_exists", "path": "src/main.ts", "weight": 10}
+      ]
+    },
+    {
+      "id": "astro",
+      "name": "Astro",
+      "tier": "A",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 70,
+      "supersedes": ["react", "static-web"],
+      "capabilities": ["static"],
+      "notes": "Islands are static-friendly. SSR adapters and server endpoints change the recommendation.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "astro", "weight": 85},
+        {"kind": "file_exists", "path": "astro.config.*", "weight": 30}
+      ]
+    },
+    {
+      "id": "django",
+      "name": "Django",
+      "tier": "A",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 80,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python", "database"],
+      "notes": "Check version/EOL, DEBUG, SECRET_KEY, ALLOWED_HOSTS, and static/media handling. Electron + PyInstaller sidecar is the default path; pywebview is the lighter fallback.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "django", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "django", "weight": 85},
+        {"kind": "file_exists", "path": "manage.py", "weight": 30},
+        {"kind": "file_exists", "path": "settings.py", "weight": 15}
+      ]
+    },
+    {
+      "id": "flask",
+      "name": "Flask",
+      "tier": "A",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 70,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Use a production WSGI server, not the development server. Electron + PyInstaller sidecar is the default path.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "flask", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "flask", "weight": 85},
+        {"kind": "file_exists", "path": "app.py", "weight": 10},
+        {"kind": "file_exists", "path": "wsgi.py", "weight": 10}
+      ]
+    },
+    {
+      "id": "fastapi",
+      "name": "FastAPI",
+      "tier": "A",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 70,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Async server. Disable OpenAPI/docs in production, bind to loopback with a per-launch token, and supervise the sidecar.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "fastapi", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "fastapi", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "uvicorn", "weight": 20},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "uvicorn", "weight": 20}
+      ]
+    },
+    {
+      "id": "laravel",
+      "name": "Laravel",
+      "tier": "A",
+      "language": "php",
+      "default_target": "nativephp",
+      "priority": 80,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "php", "database", "laravel"],
+      "notes": "NativePHP is the Laravel-specific path. Check PHP version, extensions, storage permissions, and queue/scheduler assumptions.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "composer.json", "name": "laravel/framework", "weight": 85},
+        {"kind": "file_exists", "path": "artisan", "weight": 30},
+        {"kind": "file_exists", "path": "app/Http/Kernel.php", "weight": 15}
+      ]
+    },
+    {
+      "id": "rails",
+      "name": "Rails",
+      "tier": "A",
+      "language": "ruby",
+      "default_target": "electron",
+      "priority": 80,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "ruby", "database"],
+      "notes": "Ruby runtime packaging and native gems are the hard part. Electron + Ruby sidecar is possible; a rewrite may be cheaper for small apps.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "Gemfile", "name": "rails", "weight": 85},
+        {"kind": "file_exists", "path": "config/application.rb", "weight": 30},
+        {"kind": "file_exists", "path": "bin/rails", "weight": 15}
+      ]
+    },
+    {
+      "id": "static-web",
+      "name": "Static HTML/PWA",
+      "tier": "A",
+      "language": "web",
+      "default_target": "tauri",
+      "priority": 10,
+      "capabilities": ["static"],
+      "notes": "Static site or PWA. Tauri provides a desktop shell; PWA remains the zero-install fallback.",
+      "signals": [
+        {"kind": "file_exists", "path": "index.html", "weight": 25},
+        {"kind": "file_exists", "path": "manifest.webmanifest", "weight": 40},
+        {"kind": "file_exists", "path": "sw.js", "weight": 20},
+        {"kind": "file_exists", "path": "service-worker.js", "weight": 20}
+      ]
+    },
+    {
+      "id": "aspnet-blazor",
+      "name": "ASP.NET Core / Blazor",
+      "tier": "A",
+      "language": "dotnet",
+      "default_target": "electron",
+      "priority": 75,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "dotnet"],
+      "notes": "Electron + .NET sidecar for server apps. Blazor WebAssembly can be wrapped statically; MAUI Blazor Hybrid is a rewrite of the hosting model, not a drop-in.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "csproj", "name": "Microsoft.AspNetCore", "weight": 75},
+        {"kind": "manifest_dep", "manifest": "csproj", "name": "Microsoft.AspNetCore.Components", "weight": 40},
+        {"kind": "manifest_dep", "manifest": "csproj", "name": "Microsoft.AspNetCore.Components.WebAssembly", "weight": 35},
+        {"kind": "file_exists", "path": "Program.cs", "weight": 15},
+        {"kind": "dir_exists", "path": "wwwroot", "weight": 10}
+      ]
+    },
+    {
+      "id": "go-http",
+      "name": "Go HTTP",
+      "tier": "A",
+      "language": "go",
+      "default_target": "wails",
+      "priority": 65,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "go"],
+      "notes": "Wails is the natural Go fit. Tauri + Go sidecar is viable when the UI should stay in the web stack.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "go.mod", "name": "github.com/gin-gonic/gin", "weight": 75},
+        {"kind": "manifest_dep", "manifest": "go.mod", "name": "github.com/labstack/echo/v4", "weight": 75},
+        {"kind": "manifest_dep", "manifest": "go.mod", "name": "github.com/gofiber/fiber/v2", "weight": 75},
+        {"kind": "manifest_dep", "manifest": "go.mod", "name": "github.com/go-chi/chi/v5", "weight": 50},
+        {"kind": "manifest_dep", "manifest": "go.mod", "name": "github.com/gorilla/mux", "weight": 50},
+        {"kind": "file_contains", "path": "*.go", "pattern": "net/http", "weight": 55},
+        {"kind": "file_contains", "path": "go.mod", "pattern": "^module ", "weight": 10}
+      ]
+    },
+    {
+      "id": "spring-boot",
+      "name": "Spring Boot",
+      "tier": "A",
+      "language": "java",
+      "default_target": "electron",
+      "priority": 80,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "java", "database"],
+      "notes": "JRE sidecar adds 150-250 MB. Electron + jpackage/JRE is possible; container/PWA is often the better delivery model.",
+      "signals": [
+        {"kind": "file_contains", "path": "pom.xml", "pattern": "spring-boot-starter-web", "weight": 80},
+        {"kind": "file_contains", "path": "build.gradle*", "pattern": "org.springframework.boot", "weight": 80},
+        {"kind": "file_exists", "path": "application.properties", "weight": 20},
+        {"kind": "file_exists", "path": "application.yml", "weight": 20}
+      ]
+    },
+
+    {
+      "id": "remix",
+      "name": "Remix",
+      "tier": "B",
+      "language": "node",
+      "default_target": "electron",
+      "priority": 70,
+      "supersedes": ["react", "static-web"],
+      "capabilities": ["server", "node"],
+      "notes": "Server loaders/actions block static export. Electron for server mode; SPA mode may allow Tauri.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@remix-run/react", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@remix-run/node", "weight": 40},
+        {"kind": "file_exists", "path": "remix.config.*", "weight": 20}
+      ]
+    },
+    {
+      "id": "solid",
+      "name": "Solid / SolidStart",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 40,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static Solid SPA. SolidStart server mode changes the recommendation.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "solid-js", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "solid-start", "weight": 40},
+        {"kind": "file_exists", "path": "vite.config.*", "weight": 10}
+      ]
+    },
+    {
+      "id": "qwik",
+      "name": "Qwik / QwikCity",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 40,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static output works; SSR mode needs a server host.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@builder.io/qwik", "weight": 80},
+        {"kind": "file_exists", "path": "qwik.config.*", "weight": 20}
+      ]
+    },
+    {
+      "id": "gatsby",
+      "name": "Gatsby",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 50,
+      "supersedes": ["react", "static-web"],
+      "capabilities": ["static"],
+      "notes": "Static output. Check plugins that use Node APIs at runtime.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "gatsby", "weight": 85},
+        {"kind": "file_exists", "path": "gatsby-config.*", "weight": 20}
+      ]
+    },
+    {
+      "id": "ember",
+      "name": "Ember",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 50,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static build; Electron only if Node addons are required.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "ember-source", "weight": 85},
+        {"kind": "file_exists", "path": "ember-cli-build.js", "weight": 20}
+      ]
+    },
+    {
+      "id": "preact",
+      "name": "Preact",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 35,
+      "supersedes": ["react", "static-web"],
+      "capabilities": ["static"],
+      "notes": "Static SPA with a small runtime.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "preact", "weight": 80},
+        {"kind": "file_exists", "path": "vite.config.*", "weight": 10}
+      ]
+    },
+    {
+      "id": "lit",
+      "name": "Lit",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 35,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Web components; static build.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "lit", "weight": 80},
+        {"kind": "file_exists", "path": "vite.config.*", "weight": 10}
+      ]
+    },
+    {
+      "id": "htmx",
+      "name": "HTMX",
+      "tier": "B",
+      "language": "web",
+      "default_target": "electron",
+      "priority": 30,
+      "supersedes": ["static-web"],
+      "capabilities": ["server"],
+      "notes": "Server-rendered fragments; not a static SPA. Electron + backend or PWA against a remote server.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "htmx.org", "weight": 75},
+        {"kind": "file_contains", "path": "*.html", "pattern": "hx-[a-z]+=", "weight": 20}
+      ]
+    },
+    {
+      "id": "alpine",
+      "name": "Alpine.js",
+      "tier": "B",
+      "language": "web",
+      "default_target": "tauri",
+      "priority": 25,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Usually paired with a server; verify the backend before choosing a shell.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "alpinejs", "weight": 75},
+        {"kind": "file_contains", "path": "*.html", "pattern": "x-data=", "weight": 20}
+      ]
+    },
+    {
+      "id": "meteor",
+      "name": "Meteor",
+      "tier": "B",
+      "language": "node",
+      "default_target": "electron",
+      "priority": 60,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "node", "database"],
+      "notes": "Node full-stack with a database; heavy. Legacy risk.",
+      "signals": [
+        {"kind": "file_exists", "path": ".meteor/release", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "meteor-node-stubs", "weight": 30}
+      ]
+    },
+    {
+      "id": "ionic",
+      "name": "Ionic",
+      "tier": "B",
+      "language": "node",
+      "default_target": "capacitor",
+      "priority": 60,
+      "supersedes": ["static-web"],
+      "capabilities": ["mobile-first", "static"],
+      "notes": "Mobile-first. Capacitor for Android/iOS; desktop via community Electron is not a first-class path.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@ionic/react", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@ionic/vue", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@ionic/angular", "weight": 80},
+        {"kind": "file_exists", "path": "capacitor.config.*", "weight": 30}
+      ]
+    },
+    {
+      "id": "streamlit",
+      "name": "Streamlit",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 60,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Server-rendered data app; bundle Python and dependencies. Check model/data size.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "streamlit", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "streamlit", "weight": 85}
+      ]
+    },
+    {
+      "id": "gradio",
+      "name": "Gradio",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 60,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "ML demo app; bundle Python and check model/data size.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "gradio", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "gradio", "weight": 85}
+      ]
+    },
+    {
+      "id": "dash",
+      "name": "Dash",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 60,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Plotly server app; bundle Python and static assets.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "dash", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "dash", "weight": 85}
+      ]
+    },
+    {
+      "id": "nicegui",
+      "name": "NiceGUI",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Server-based UI; pywebview is a lighter alternative if the app is simple.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "nicegui", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "nicegui", "weight": 85}
+      ]
+    },
+    {
+      "id": "reflex",
+      "name": "Reflex",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Compiles to a web app plus backend; check packaging.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "reflex", "weight": 85},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "reflex", "weight": 85}
+      ]
+    },
+    {
+      "id": "pyramid",
+      "name": "Pyramid",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Older but viable Python web framework.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "pyramid", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "pyramid", "weight": 80},
+        {"kind": "file_exists", "path": "development.ini", "weight": 20}
+      ]
+    },
+    {
+      "id": "bottle",
+      "name": "Bottle",
+      "tier": "B",
+      "language": "python",
+      "default_target": "pywebview",
+      "priority": 50,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Single-file apps; pywebview is often enough.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "bottle", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "bottle", "weight": 80}
+      ]
+    },
+    {
+      "id": "tornado",
+      "name": "Tornado",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "WebSocket support; check sidecar supervision.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "tornado", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "tornado", "weight": 80}
+      ]
+    },
+    {
+      "id": "sanic",
+      "name": "Sanic",
+      "tier": "B",
+      "language": "python",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "python"],
+      "notes": "Async Python server; similar to FastAPI.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "sanic", "weight": 80},
+        {"kind": "manifest_dep", "manifest": "pyproject.toml", "name": "sanic", "weight": 80}
+      ]
+    },
+    {
+      "id": "symfony",
+      "name": "Symfony",
+      "tier": "B",
+      "language": "php",
+      "default_target": "electron",
+      "priority": 65,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "php"],
+      "notes": "Electron + PHP sidecar; NativePHP is not a Symfony drop-in.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "composer.json", "name": "symfony/framework-bundle", "weight": 85},
+        {"kind": "file_exists", "path": "bin/console", "weight": 20}
+      ]
+    },
+    {
+      "id": "codeigniter",
+      "name": "CodeIgniter",
+      "tier": "B",
+      "language": "php",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "php"],
+      "notes": "Legacy caution; modernize first if EOL.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "composer.json", "name": "codeigniter4/framework", "weight": 80},
+        {"kind": "file_exists", "path": "app/Config/App.php", "weight": 20}
+      ]
+    },
+    {
+      "id": "cakephp",
+      "name": "CakePHP",
+      "tier": "B",
+      "language": "php",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "php"],
+      "notes": "Electron + PHP sidecar; check EOL.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "composer.json", "name": "cakephp/cakephp", "weight": 80},
+        {"kind": "file_exists", "path": "config/app.php", "weight": 20}
+      ]
+    },
+    {
+      "id": "yii",
+      "name": "Yii",
+      "tier": "B",
+      "language": "php",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "php"],
+      "notes": "Electron + PHP sidecar; check EOL.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "composer.json", "name": "yiisoft/yii2", "weight": 80},
+        {"kind": "file_exists", "path": "yii", "weight": 20}
+      ]
+    },
+    {
+      "id": "sinatra",
+      "name": "Sinatra",
+      "tier": "B",
+      "language": "ruby",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "ruby"],
+      "notes": "Ruby runtime packaging is the hard part.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "Gemfile", "name": "sinatra", "weight": 80},
+        {"kind": "file_exists", "path": "app.rb", "weight": 15}
+      ]
+    },
+    {
+      "id": "hanami",
+      "name": "Hanami",
+      "tier": "B",
+      "language": "ruby",
+      "default_target": "electron",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "ruby"],
+      "notes": "Niche Ruby framework; check dependencies.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "Gemfile", "name": "hanami", "weight": 80}
+      ]
+    },
+    {
+      "id": "hugo",
+      "name": "Hugo",
+      "tier": "B",
+      "language": "go",
+      "default_target": "tauri",
+      "priority": 50,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static output; Tauri or PWA.",
+      "signals": [
+        {"kind": "file_exists", "path": "hugo.toml", "weight": 80},
+        {"kind": "file_exists", "path": "config.toml", "weight": 50},
+        {"kind": "dir_exists", "path": "content", "weight": 20}
+      ]
+    },
+    {
+      "id": "jekyll",
+      "name": "Jekyll",
+      "tier": "B",
+      "language": "ruby",
+      "default_target": "tauri",
+      "priority": 50,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static output; Tauri or PWA.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "Gemfile", "name": "jekyll", "weight": 80},
+        {"kind": "file_exists", "path": "_config.yml", "weight": 25}
+      ]
+    },
+    {
+      "id": "eleventy",
+      "name": "Eleventy",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 50,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static output; Tauri or PWA.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@11ty/eleventy", "weight": 80},
+        {"kind": "file_exists", "path": ".eleventy.js", "weight": 25}
+      ]
+    },
+    {
+      "id": "docusaurus",
+      "name": "Docusaurus",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 55,
+      "supersedes": ["react", "static-web"],
+      "capabilities": ["static"],
+      "notes": "Static docs site; Tauri or PWA.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "@docusaurus/core", "weight": 85},
+        {"kind": "file_exists", "path": "docusaurus.config.*", "weight": 25}
+      ]
+    },
+    {
+      "id": "vitepress",
+      "name": "VitePress",
+      "tier": "B",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static docs site; Tauri or PWA.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "vitepress", "weight": 85},
+        {"kind": "dir_exists", "path": ".vitepress", "weight": 25}
+      ]
+    },
+    {
+      "id": "mkdocs",
+      "name": "MkDocs",
+      "tier": "B",
+      "language": "python",
+      "default_target": "tauri",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static docs site; Tauri or PWA.",
+      "signals": [
+        {"kind": "file_exists", "path": "mkdocs.yml", "weight": 85},
+        {"kind": "dir_exists", "path": "docs", "weight": 15}
+      ]
+    },
+    {
+      "id": "sphinx",
+      "name": "Sphinx",
+      "tier": "B",
+      "language": "python",
+      "default_target": "tauri",
+      "priority": 55,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static docs site; Tauri or PWA.",
+      "signals": [
+        {"kind": "file_exists", "path": "conf.py", "weight": 50},
+        {"kind": "file_exists", "path": "index.rst", "weight": 30},
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "sphinx", "weight": 60}
+      ]
+    },
+    {
+      "id": "wordpress",
+      "name": "WordPress",
+      "tier": "B",
+      "language": "php",
+      "default_target": "container",
+      "priority": 70,
+      "supersedes": ["static-web"],
+      "capabilities": ["cms", "server", "php", "database"],
+      "notes": "CMS + PHP + database. Do not package as a desktop app; use a container or remote PWA.",
+      "signals": [
+        {"kind": "file_exists", "path": "wp-config.php", "weight": 85},
+        {"kind": "dir_exists", "path": "wp-content", "weight": 40},
+        {"kind": "dir_exists", "path": "wp-includes", "weight": 30}
+      ]
+    },
+    {
+      "id": "drupal",
+      "name": "Drupal",
+      "tier": "B",
+      "language": "php",
+      "default_target": "container",
+      "priority": 70,
+      "supersedes": ["static-web"],
+      "capabilities": ["cms", "server", "php", "database"],
+      "notes": "CMS + PHP + database. Do not package as a desktop app; use a container or remote PWA.",
+      "signals": [
+        {"kind": "file_exists", "path": "core/lib/Drupal.php", "weight": 85},
+        {"kind": "dir_exists", "path": "sites/default", "weight": 30}
+      ]
+    },
+    {
+      "id": "joomla",
+      "name": "Joomla",
+      "tier": "B",
+      "language": "php",
+      "default_target": "container",
+      "priority": 70,
+      "supersedes": ["static-web"],
+      "capabilities": ["cms", "server", "php", "database"],
+      "notes": "CMS + PHP + database. Do not package as a desktop app; use a container or remote PWA.",
+      "signals": [
+        {"kind": "file_exists", "path": "configuration.php", "weight": 60},
+        {"kind": "dir_exists", "path": "administrator", "weight": 40}
+      ]
+    },
+    {
+      "id": "quarkus",
+      "name": "Quarkus",
+      "tier": "B",
+      "language": "java",
+      "default_target": "electron",
+      "priority": 65,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "java"],
+      "notes": "JRE sidecar is heavy. Native image possible but packaging complexity is high.",
+      "signals": [
+        {"kind": "file_contains", "path": "pom.xml", "pattern": "quarkus", "weight": 80},
+        {"kind": "file_contains", "path": "build.gradle*", "pattern": "io.quarkus", "weight": 80}
+      ]
+    },
+    {
+      "id": "micronaut",
+      "name": "Micronaut",
+      "tier": "B",
+      "language": "java",
+      "default_target": "electron",
+      "priority": 65,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "java"],
+      "notes": "JRE sidecar is heavy; container/PWA may be better.",
+      "signals": [
+        {"kind": "file_contains", "path": "pom.xml", "pattern": "micronaut", "weight": 80},
+        {"kind": "file_contains", "path": "build.gradle*", "pattern": "micronaut", "weight": 80}
+      ]
+    },
+    {
+      "id": "axum",
+      "name": "Axum",
+      "tier": "B",
+      "language": "rust",
+      "default_target": "tauri",
+      "priority": 65,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "rust"],
+      "notes": "Tauri commands or a Tauri sidecar; natural Rust fit.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "Cargo.toml", "name": "axum", "weight": 85},
+        {"kind": "file_contains", "path": "src/*.rs", "pattern": "Router::new", "weight": 20}
+      ]
+    },
+    {
+      "id": "actix",
+      "name": "Actix Web",
+      "tier": "B",
+      "language": "rust",
+      "default_target": "tauri",
+      "priority": 65,
+      "supersedes": ["static-web"],
+      "capabilities": ["server", "rust"],
+      "notes": "Tauri commands or sidecar; natural Rust fit.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "Cargo.toml", "name": "actix-web", "weight": 85},
+        {"kind": "file_contains", "path": "src/*.rs", "pattern": "HttpServer", "weight": 20}
+      ]
+    },
+
+    {
+      "id": "react-native",
+      "name": "React Native",
+      "tier": "C",
+      "language": "node",
+      "default_target": "rewrite",
+      "priority": 40,
+      "capabilities": ["mobile-first", "native"],
+      "notes": "Not a web-to-desktop candidate. Native mobile or a rewrite.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "react-native", "weight": 85},
+        {"kind": "dir_exists", "path": "android", "weight": 20},
+        {"kind": "dir_exists", "path": "ios", "weight": 20}
+      ]
+    },
+    {
+      "id": "expo",
+      "name": "Expo",
+      "tier": "C",
+      "language": "node",
+      "default_target": "rewrite",
+      "priority": 40,
+      "capabilities": ["mobile-first", "native"],
+      "notes": "Mobile-first. PWA for web; native mobile for app stores.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "expo", "weight": 80},
+        {"kind": "file_exists", "path": "app.json", "weight": 20},
+        {"kind": "dir_exists", "path": "expo-router", "weight": 10}
+      ]
+    },
+    {
+      "id": "aurelia",
+      "name": "Aurelia",
+      "tier": "C",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 30,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static SPA; smaller ecosystem. Manual review.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "aurelia", "weight": 75},
+        {"kind": "file_exists", "path": "aurelia.json", "weight": 25}
+      ]
+    },
+    {
+      "id": "backbone",
+      "name": "Backbone",
+      "tier": "C",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 25,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Legacy; verify build tooling. Manual review.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "backbone", "weight": 75},
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "underscore", "weight": 20}
+      ]
+    },
+    {
+      "id": "marko",
+      "name": "Marko",
+      "tier": "C",
+      "language": "node",
+      "default_target": "tauri",
+      "priority": 30,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Niche SSR/static framework. Manual review.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "package.json", "name": "marko", "weight": 80},
+        {"kind": "file_exists", "path": "marko.json", "weight": 20}
+      ]
+    },
+    {
+      "id": "jupyter",
+      "name": "Jupyter Notebook/Lab",
+      "tier": "C",
+      "language": "python",
+      "default_target": "container",
+      "priority": 60,
+      "capabilities": ["do-not-package", "python"],
+      "notes": "Developer tool with a large security surface. Do not package as a desktop app; use a container or hosted service.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "jupyter", "weight": 75},
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "jupyterlab", "weight": 75},
+        {"kind": "file_exists", "path": "*.ipynb", "weight": 20}
+      ]
+    },
+    {
+      "id": "pelican",
+      "name": "Pelican",
+      "tier": "C",
+      "language": "python",
+      "default_target": "tauri",
+      "priority": 40,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static site generator. Manual review.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "requirements.txt", "name": "pelican", "weight": 80},
+        {"kind": "file_exists", "path": "pelicanconf.py", "weight": 25}
+      ]
+    },
+    {
+      "id": "middleman",
+      "name": "Middleman",
+      "tier": "C",
+      "language": "ruby",
+      "default_target": "tauri",
+      "priority": 40,
+      "supersedes": ["static-web"],
+      "capabilities": ["static"],
+      "notes": "Static; legacy. Manual review.",
+      "signals": [
+        {"kind": "manifest_dep", "manifest": "Gemfile", "name": "middleman", "weight": 80},
+        {"kind": "file_exists", "path": "config.rb", "weight": 20}
+      ]
+    },
+    {
+      "id": "vaadin",
+      "name": "Vaadin",
+      "tier": "C",
+      "language": "java",
+      "default_target": "rewrite",
+      "priority": 55,
+      "capabilities": ["legacy", "server", "java"],
+      "notes": "Java UI framework; not a web wrapper. jpackage/native or rewrite.",
+      "signals": [
+        {"kind": "file_contains", "path": "pom.xml", "pattern": "vaadin", "weight": 80},
+        {"kind": "file_contains", "path": "build.gradle*", "pattern": "vaadin", "weight": 80}
+      ]
+    },
+    {
+      "id": "jsp-servlet",
+      "name": "JSP / Servlet",
+      "tier": "C",
+      "language": "java",
+      "default_target": "modernize",
+      "priority": 60,
+      "capabilities": ["legacy", "server", "java"],
+      "notes": "Legacy Java web stack. Modernize before packaging.",
+      "signals": [
+        {"kind": "file_exists", "path": "web.xml", "weight": 60},
+        {"kind": "file_contains", "path": "web.xml", "pattern": "servlet", "weight": 20},
+        {"kind": "file_contains", "path": "*.jsp", "pattern": "<%@", "weight": 20}
+      ]
+    }
+  ]
+}

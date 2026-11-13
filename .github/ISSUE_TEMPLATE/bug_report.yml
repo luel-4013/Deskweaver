@@ -1,0 +1,116 @@
+name: Bug report
+description: Report a reproducible problem with Deskweaver
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please keep reports
+        reproducible and sanitized: no secrets, private source code, customer
+        data, or absolute personal paths.
+
+        For a security vulnerability, stop and use the private reporting link
+        in [SECURITY.md](https://github.com/luel-4013/deskweaver/blob/main/SECURITY.md)
+        instead of this form.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
+        - label: I removed secrets, private source code, and personal paths from this report.
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Deskweaver version
+      description: Paste the output of `deskweaver version`.
+      placeholder: "Deskweaver 0.1.0-dev (abc1234, 2026-01-01T00:00:00Z, linux/amd64)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Host operating system
+      options:
+        - Linux
+        - Windows
+        - macOS
+        - Other (describe below)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you get Deskweaver?
+      options:
+        - Built from source with `make build`
+        - Built from source with `go build`
+        - Installed with `go install`
+        - Other (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and flags
+      description: The exact command, with private paths replaced by `/path/to/project`.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: project_shape
+    attributes:
+      label: Project shape (sanitized)
+      description: What did Deskweaver detect? Include the framework, tier, and confidence if known.
+      placeholder: "React + Vite, Tier A, high confidence; targets linux,windows; hardened profile"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A minimal sequence that reliably triggers the problem.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the exit code and any error output.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      description: Paste sanitized logs or JSON. Do not paste a full private plan.
+      render: shell
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that might explain the behavior, such as a custom rule pack or a monorepo workspace.

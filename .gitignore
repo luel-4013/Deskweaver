@@ -1,0 +1,21 @@
+/deskweaver
+/deskweaver.exe
+/dist/
+/deskweaver-out/
+/deskweaver-out.backup-*
+*.test
+coverage.out
+*.coverprofile
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Local-only material. Review before publishing: the planning documents
+# include portfolio details and are not part of the public repository.
+/docs/planning/
+/testbench/

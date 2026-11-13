@@ -1,0 +1,69 @@
+name: Feature request
+description: Propose a change to Deskweaver
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Deskweaver is advisor-only in v0.1. Proposals that add installs,
+        elevation, project writes, or project-code execution need a separate
+        design and threat model. Please explain the safety impact explicitly.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I read the scope and safety contract in CONTRIBUTING.md.
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem does this solve? Describe the situation, not only the proposed solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should Deskweaver do differently?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing flags, the generated kit, or another tool.
+
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Safety impact
+      description: What would this feature need?
+      options:
+        - No change: remains read-only and advisor-only
+        - Changes generated kit files or commands
+        - Adds host checks or dependency detection
+        - Needs writes, installs, elevation, or execution (requires design review)
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: platforms
+    attributes:
+      label: Platform impact
+      description: Does this affect Linux, Windows, macOS, Android, or iOS differently?
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links, mockups, or sanitized examples. Do not include private source or secrets.
