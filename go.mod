@@ -3,9 +3,9 @@ module github.com/luel-4013/deskweaver
 go 1.27.1
 
 require (
-	github.com/charmbracelet/huh v0.8.0
+	github.com/charmbracelet/huh v1.0.0
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/mattn/go-isatty v0.0.20
+	github.com/mattn/go-isatty v0.0.24
 	gopkg.in/yaml.v3 v3.0.1
 )
 
